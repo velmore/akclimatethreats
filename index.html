@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <title>
+      Audubon Alaska Interactive Climate Map
+    </title>
+	  
+	 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+   
+	 <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.17/esri/themes/light/main.css"/>
+    
+	  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" ></script> 
+	  <script src="https://js.arcgis.com/4.17/"></script>
+
+    <style>
+      html,
+      body,
+      #viewDiv {
+        margin: 0;
+		padding: 0;
+        height: 100%;
+        width: 100%;
+      }
+	
+     .esri-editor .esri-item-list__scroller {
+        max-height: 350px;
+      }
+	
+	  .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+		
+	.overlay {
+      opacity:0;
+      position:fixed;
+      top:-999em;
+      left:-999em;
+      width:100%;
+      height:100%;
+      display:table;
+      background:rgba(0,0,0,0.8);
+      -webkit-animation: splash 10s forwards; 
+      animation: splash 10s forwards;
+    }
+    .overlay-inner {
+      display:table-cell;
+      vertical-align:middle;
+      text-align:center;
+    }
+    .message {
+      border:10px solid red;
+      border-radius:10px;
+      background:#fff;
+      display:inline-block;
+      vertical-align:middle;
+      width:50%;
+      text-align:left;
+      padding:10px;
+    }
+    @-webkit-keyframes splash {
+      0%  {opacity: 0;top:0;left:0}
+      20% {opacity:1;top:0;left:0}
+      60% {opacity:1;top:0;left:0}
+      99% {top:0;left:0}
+      100% {opacity:0;top:-999em;left:-999em}
+    }
+    @-moz-keyframes splash {
+      0%  {opacity: 0;top:0;left:0}
+      20% {opacity:1;top:0;left:0}
+      60% {opacity:1;top:0;left:0}
+      99% {top:0;left:0}
+      100% {opacity:0;top:-999em;left:-999em}
+    }
+    @-ms-keyframes splash {
+      0%   {opacity: 0;top:0;left:0}
+         20% {opacity:1;top:0;left:0}
+         60% {opacity:1;top:0;left:0}
+         99% {top:0;left:0}
+         100% {opacity:0;top:-999em;left:-999em}
+    }  
+    @keyframes splash {
+      0%  {opacity: 0;top:0;left:0}
+      20% {opacity:1;top:0;left:0}
+      60% {opacity:1;top:0;left:0}
+      99% {top:0;left:0}
+      100% {opacity:0;top:-999em;left:-999em}
+    }
+		
+    </style>
+
+    
+	 <script>
+      require([
+        "esri/WebMap",
+        "esri/views/MapView",
+        //"esri/widgets/Editor",
+		//"esri/widgets/Directions",
+		"esri/widgets/Home",
+		"esri/widgets/Search", 
+		//"esri/identity/IdentityManager",
+		"esri/widgets/Bookmarks",
+        "esri/widgets/Expand",
+		"esri/widgets/Legend",
+		"esri/widgets/LayerList",
+		"esri/popup/content/AttachmentsContent",
+		"dojo/domReady!"
+      ], function (WebMap, 
+					MapView, 
+					//Editor, 
+					//Directions, 
+					Home, 			 			  
+					Search, 
+					//esriId, 
+					Bookmarks, 
+					Expand, 
+					Legend, 				 
+					LayerList, 
+					AttachmentsContent) {
+        // Create a map from the referenced webmap item id
+        let webmap = new WebMap({
+          portalItem: {
+            id: "2e0376f593034f51b0f24cd5dd87ec75"
+          }
+        });
+
+        let view = new MapView({
+          container: "viewDiv",
+          map: webmap
+        });
+
+        view.when(function () {
+          view.popup.autoOpenEnabled = true; //enable popups
+			});
+
+          // Create the Editor
+         // let editor = new Editor({
+           // view: view,
+			//allowAttachments: true
+			  
+          //});
+			
+		 // const edExpand = new Expand({
+          //		view: view,
+           //		content: editor,
+          	//	expanded: false
+        	//});
+
+          // Add widget to bottom-left of the view
+        //  view.ui.add(edExpand, "top-left");
+        
+		//  var directionsWidget = new Directions({
+        //  view: view,
+          // Point the URL to a valid route service that uses an
+          // ArcGIS Online hosted service proxy instead of the default service
+         // routeServiceUrl:
+           // "https://utility.arcgis.com/usrsvcs/appservices/BT308WLPVAAExfhc/rest/services/World/Route/NAServer/Route_World"
+      //  });
+		  
+		// const drExpand = new Expand({
+        //  	view: view,
+         // 	content: directionsWidget,
+          //	expanded: false
+      //  });
+
+        // Add the Directions widget to the top right corner of the view
+      //  view.ui.add(drExpand, {
+       //   position: "bottom-left"
+       // });
+		  
+		var homeBtn = new Home({
+        view: view
+        });
+
+        // Add the home button to the top left corner of the view
+        view.ui.add(homeBtn, "top-left");
+		  
+		var searchWidget = new Search({
+          view: view,
+		  allPlaceholder: "Search"
+        });
+		  
+		  	
+		 const scExpand = new Expand({
+          		expandTooltip: "Search",
+			 	view: view,
+          		content: searchWidget,
+          		expanded: false
+        	});
+
+          // Add widget to the top right corner of the view
+          view.ui.add(scExpand, "top-left");
+		
+		 view.when(function () {
+          var layerList = new LayerList({
+           	view: view
+         });
+			
+		 const lyExpand = new Expand({
+          		expandTooltip: "Layer Control",
+			 	view: view,
+          		content: layerList,
+          		expanded: true
+        	});
+
+          // Add widget to the top right corner of the view
+          view.ui.add(lyExpand, "bottom-left");
+		});
+		  
+		var legend = new Legend({
+            view: view,
+			style: "classic" // other styles include 'classic'
+          });
+		  
+		const lgExpand = new Expand({
+          	expandTooltip: "Legend",
+			view: view,
+          	content: legend,
+          	expanded: true
+        });
+
+        view.ui.add(lgExpand, "top-right");
+		 
+		  const bookmarks = new Bookmarks({
+          	view: view,
+          	// allows bookmarks to be added, edited, or deleted
+          	editingEnabled: true
+        });
+
+        const bkExpand = new Expand({
+          expandTooltip: "Bookmarks",
+		  view: view,
+          content: bookmarks,
+          expanded: false
+        });
+
+        // Add the widget to the bottom right corner of the view
+        view.ui.add(bkExpand, "bottom-right"); 
+		  
+      });
+		 	
+    </script>
+  </head>
+
+  <body class="claro">
+  <div id="viewDiv"></div>
+  <div class="overlay">
+    <div class="overlay-inner">
+      <div class="message">
+        <p>Lorem ipsum dolor sit amet consecetueur adispicing elit amet. Lorem ipsum dolor sit amet consecetueur <a href="#">adispicing elit</a> amet.Lorem ipsum dolor sit amet consecetueur adispicing elit amet.Lorem ipsum dolor sit amet consecetueur adispicing elit amet. </p>
+      </div>
+    </div>
+</div>>
+		  
+    <div id="viewDiv"></div>
+    <div id="editorDiv"></div>
+		  
+  </body>
+</html>
